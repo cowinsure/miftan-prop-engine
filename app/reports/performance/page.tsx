@@ -255,7 +255,7 @@ export default function PerformanceReportPage() {
       .finally(() => setPropertiesLoading(false));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -319,6 +319,61 @@ export default function PerformanceReportPage() {
       {error && (
         <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-6">
           <XCircleIcon className="w-4 h-4 shrink-0 mt-0.5" />{error}
+        </div>
+      )}
+
+      {/* ── Empty state ── */}
+      {!report && !error && (
+        <div className="rounded-2xl border border-slate-200 bg-linear-to-br from-slate-50 via-white to-indigo-50/60 overflow-hidden">
+          <div className="px-6 py-6 sm:px-7">
+            <p className="text-[0.65rem] font-semibold text-slate-400 uppercase tracking-[0.22em] mb-2">
+              Performance Workspace
+            </p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-headline leading-tight max-w-2xl">
+              Select a property and month to generate a full revenue, KPI, and forecast report.
+            </h2>
+            <p className="text-sm text-slate-500 mt-3 max-w-2xl">
+              The report breaks down actual vs. expected performance, KPI thresholds, month-end
+              forecast, and confirmed on-the-books revenue — all in one view.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-px bg-slate-200/70">
+            {[
+              {
+                title: 'Revenue Overview',
+                copy: 'Actual revenue and nights to date compared against expected targets.',
+                Icon: CurrencyDollarIcon,
+                tone: 'text-emerald-600 bg-emerald-50',
+              },
+              {
+                title: 'KPI Analysis',
+                copy: 'Pace ratio, ADR gap, and threshold bands that show where performance stands.',
+                Icon: ChartBarIcon,
+                tone: 'text-indigo-600 bg-indigo-50',
+              },
+              {
+                title: 'Forecast',
+                copy: 'Month-end revenue projection, forecast vs. target variance, and after-action estimate.',
+                Icon: BoltIcon,
+                tone: 'text-violet-600 bg-violet-50',
+              },
+              {
+                title: 'On the Books',
+                copy: 'Confirmed bookings — OTB nights and revenue locked in for the period.',
+                Icon: BookOpenIcon,
+                tone: 'text-amber-600 bg-amber-50',
+              },
+            ].map(({ title, copy, Icon, tone }) => (
+              <div key={title} className="bg-white p-5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${tone}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <p className="text-sm font-semibold text-slate-900 mt-4">{title}</p>
+                <p className="text-sm text-slate-500 mt-1 leading-relaxed">{copy}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
