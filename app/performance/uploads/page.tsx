@@ -117,7 +117,7 @@ export default function PerformanceUploadsPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     if (!file) { setError('Please select a file'); return; }
     setUploading(true);

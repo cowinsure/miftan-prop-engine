@@ -23,7 +23,7 @@ interface Property {
 interface UploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  onSubmit: (e: { preventDefault(): void }) => Promise<void>;
   file: File | null;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDrag: (e: React.DragEvent) => void;
@@ -41,7 +41,6 @@ interface UploadModalProps {
 }
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const COMPANY_ID = '1';
 
 type DropPos = { top: number; left: number; width: number };
 
@@ -237,7 +236,7 @@ function MonthPicker({ value, onChange }: { value: string; onChange: (v: string)
 // ── Main modal ───────────────────────────────────────────────────────────────
 export default function UploadModal({
   isOpen, onClose, onSubmit, file, onFileSelect, onDrag, onDrop,
-  onCompanyIdChange, propertyId, onPropertyIdChange,
+  companyId, onCompanyIdChange, propertyId, onPropertyIdChange,
   uploadMonth, onUploadMonthChange, uploadYear, onUploadYearChange,
   dragActive, uploading,
 }: UploadModalProps) {
@@ -246,7 +245,6 @@ export default function UploadModal({
 
   useEffect(() => {
     if (!isOpen) return;
-    onCompanyIdChange(COMPANY_ID);
     setPropertiesLoading(true);
     getProperties()
       .then((data) => {
@@ -255,7 +253,13 @@ export default function UploadModal({
       })
       .catch(() => {})
       .finally(() => setPropertiesLoading(false));
-  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const handlePropertySelect = (id: string) => {
+    onPropertyIdChange(id);
+    const prop = properties.find((p) => String(p.id) === id);
+    if (prop) onCompanyIdChange(String(prop.company_id));
+  };
 
   if (!isOpen) return null;
 
@@ -311,7 +315,9 @@ export default function UploadModal({
             <label className="block text-[0.65rem] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Company</label>
             <div className="flex items-center gap-2.5 px-3.5 py-2.5 border border-gray-200 rounded-lg bg-gray-50 cursor-not-allowed">
               <BuildingOffice2Icon className="w-4 h-4 text-slate-300 shrink-0" />
-              <span className="text-sm text-slate-500 font-medium flex-1">Company #{COMPANY_ID}</span>
+              <span className="text-sm text-slate-500 font-medium flex-1">
+                {companyId ? `Company #${companyId}` : 'Select a property first'}
+              </span>
               <span className="text-[0.6rem] font-semibold text-slate-400 bg-slate-200 px-1.5 py-0.5 rounded">Default</span>
             </div>
           </div>
@@ -319,7 +325,7 @@ export default function UploadModal({
           {/* Property */}
           <div>
             <label className="block text-[0.65rem] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Property</label>
-            <PropertyDropdown properties={properties} loading={propertiesLoading} value={propertyId} onChange={onPropertyIdChange} />
+            <PropertyDropdown properties={properties} loading={propertiesLoading} value={propertyId} onChange={handlePropertySelect} />
           </div>
 
           {/* Month & Year */}
