@@ -279,13 +279,13 @@ export default function PropertiesPage() {
                 <span className="text-[0.65rem] text-slate-400 font-medium">
                   ID #{property.id} · Co. {property.company_id}
                 </span>
-                <Link
+                {/* <Link
                   href={`/properties/${property.id}/config`}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors"
                 >
                   <Cog6ToothIcon className="w-3.5 h-3.5" />
                   Configure
-                </Link>
+                </Link> */}
               </div>
             </div>
           ))}
